@@ -9,11 +9,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="description" content="집체크 - 입퇴거 주택상태 공동점검 시제품"/>
   <meta name="apple-mobile-web-app-title" content="집체크"/>
-  <link rel="apple-touch-icon" href="icons/icon.svg"/>
+  <link rel="apple-touch-icon" href="icons/icon-180.png"/>
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg"/>
   <link rel="stylesheet" href="v2.css"/>
   <link rel="manifest" href="manifest.webmanifest"/>
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
-  <title>집체크 ZipCheck | iPhone 시연용 웹앱</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon.svg"/>
+  <title>집체크 ZipCheck | Android · iPhone 웹앱</title>
   <style>
     :root{
       --bg:#F7FAFD;
@@ -324,6 +325,14 @@
     }
 
   </style>
+<style>
+.platform-guide{display:flex;align-items:center;gap:13px;justify-content:space-between;padding:15px 17px;margin:16px 0 7px;border:1px solid #D5E8F0;background:linear-gradient(110deg,#EAF9FA,#F5F8FE);border-radius:17px}
+.platform-guide b{display:block;font-size:14px;color:#0E2B66}.platform-guide small{display:block;font-size:12px;color:#6E819E;line-height:1.5;margin-top:3px}
+.platform-guide button{background:#0E2B66;color:#fff;border:0;border-radius:12px;padding:11px 14px;font-weight:800;font-size:12px;white-space:nowrap;cursor:pointer}
+.install-steps{margin:8px 0 0;padding:12px 16px;border:1px solid #D9E8F1;background:#fff;border-radius:14px;font-size:13px;color:#304667;display:none}
+.install-steps.open{display:block}
+@media(max-width:480px){.platform-guide{gap:8px;align-items:flex-start;flex-wrap:wrap}.platform-guide button{width:100%}}
+</style>
 </head>
 <body>
   <div class="shell">
@@ -337,7 +346,7 @@
     </header>
 
     <div class="role-strip" id="roles"></div>
-    <main id="app"></main>
+    <div class="platform-guide"><div><b id="platform-title">집체크 웹앱</b><small id="platform-subtitle">Android · iPhone에서 브라우저로 바로 사용하세요.</small></div><button type="button" id="install-help">홈 화면에 설치하는 법</button></div><div id="install-steps" class="install-steps" role="status"></div><main id="app"></main>
     <footer class="footer">
       <span>ZipCheck · 입·퇴거 상태를 함께 기록하고 확인하는 비대면 점검 서비스</span>
       <span>체험용 데이터는 이 브라우저에만 저장됩니다. 실제 개인정보를 입력하지 마세요.</span>
@@ -674,6 +683,22 @@ return `<div class="profile-page"><div class="page-head"><span class="eyebrow">B
       window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
     }
     render();
+    (function(){
+      const params=new URLSearchParams(location.search);
+      const requested=params.get('platform');
+      const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+      const android=/Android/i.test(navigator.userAgent);
+      const platform=android?'android':ios?'ios':(requested==='android'?'android':requested==='ios'?'ios':'web');
+      const title=document.getElementById('platform-title'), sub=document.getElementById('platform-subtitle'), details=document.getElementById('install-steps');
+      title.textContent=platform==='android'?'Android용 집체크 웹앱':platform==='ios'?'iPhone용 집체크 웹앱':'집체크 모바일 웹앱';
+      sub.textContent='앱 설치 없이 바로 사용할 수 있어요. 기록은 각 기기에만 저장됩니다.';
+      document.getElementById('install-help').addEventListener('click',()=>{
+        details.classList.toggle('open');
+        if(platform==='ios')details.textContent='iPhone: Safari로 이 페이지를 연 뒤 공유 버튼 → 홈 화면에 추가를 누르세요.';
+        else if(platform==='android')details.textContent='Android: Chrome 메뉴(⋮) → 앱 설치 또는 홈 화면에 추가를 누르세요.';
+        else details.textContent='Android에서는 Chrome 메뉴에서, iPhone에서는 Safari 공유 메뉴에서 홈 화면에 추가하세요.';
+      });
+    })();
   </script>
 </body>
 </html>
