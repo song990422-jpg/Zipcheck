@@ -1,0 +1,9 @@
+<resources>
+<style name="Theme.ZipCheck" parent="android:style/Theme.Material.Light.NoActionBar">
+<item name="android:statusBarColor">@color/zipcheck_bg</item>
+<item name="android:navigationBarColor">@color/zipcheck_bg</item>
+<item name="android:windowLightStatusBar">true</item>
+<item name="android:windowLightNavigationBar">true</item>
+<item name="android:windowActionModeOverlay">true</item>
+</style>
+</resources>
