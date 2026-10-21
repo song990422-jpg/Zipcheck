@@ -1,0 +1,60 @@
+
+/* ZipCheck v0.2 - broker profile and draft record actions */
+.brand-logo svg{width:48px;height:48px;max-width:100%;max-height:100%}
+.broker-peek{display:flex;align-items:center;gap:14px;padding:18px;border:1px solid #DCEAF2;border-radius:18px;background:linear-gradient(110deg,#ECFAFA,#F7F5FF 60%,#FFF4E6);margin-top:17px}
+.peek-graphic{flex-shrink:0;width:52px;height:52px;display:grid;place-items:center;background:#fff;border-radius:17px;font-size:26px}
+.peek-copy{flex:1;min-width:0}.peek-copy strong{display:block;color:#0E2B66;font-size:15px}.peek-copy p{font-size:12px;color:#6E819E;margin-top:4px}.broker-peek .btn{white-space:nowrap}
+.record-main{display:flex;flex-direction:column;flex:1;min-width:0;cursor:pointer}
+.record-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto}.record-actions .card-bottom{margin-top:0}
+.delete-record{border:1px solid #F4CFCC;background:#FFF4F2;color:#B74A45;font-size:12px;font-weight:850;border-radius:11px;padding:9px 12px;min-height:38px;cursor:pointer}.delete-record:hover{background:#FFE7E4}
+.detail-utility{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}.detail-utility .btn{box-shadow:none}
+.profile-page{max-width:850px;margin:auto}
+.profile-panel{background:white;border-radius:24px;padding:24px;border:1px solid rgba(14,43,102,.08);box-shadow:0 8px 20px rgba(24,54,97,.06);margin-bottom:16px}
+.profile-header{display:flex;align-items:center;gap:16px;padding:4px 0 20px}
+.profile-photo{flex-shrink:0;width:94px;height:94px;border-radius:50%;overflow:hidden;background:#EFF7FF;border:5px solid white;box-shadow:0 0 0 1px #DCE7F1,0 7px 18px rgba(17,49,95,.09)}
+.profile-photo svg{width:100%;height:100%;display:block}
+.profile-heading{min-width:0}
+.profile-heading h2{font-size:23px;letter-spacing:-.7px;color:#0E2B66;margin:0 0 3px}
+.profile-heading p{font-size:13px;color:#6E819E;margin:0 0 8px}
+.profile-tags{display:flex;gap:7px;flex-wrap:wrap}
+.profile-tag{border-radius:999px;padding:5px 9px;background:#EAF7F4;color:#238A78;font-size:11px;font-weight:800}
+.profile-tag.violet{background:#F2EFFF;color:#7161CA}
+.profile-disclaimer{background:#F8FAFD;border:1px solid #E5ECF4;color:#677B96;border-radius:13px;padding:10px 13px;font-size:12px;line-height:1.5}
+.score-panel{background:linear-gradient(130deg,#E7FAF8 0%,#F2FBFA 55%,#FFF9EB 100%);border:1px solid #DFF2EE;border-radius:18px;padding:21px}
+.score-title{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:850;color:#0E2B66}
+.score-main{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:13px 0}
+.score-main p{font-size:12px;line-height:1.6;color:#628194;max-width:290px}
+.score-number{color:#13A78C;font-weight:950;font-size:47px;line-height:1;white-space:nowrap;letter-spacing:-1.8px}
+.score-number small{font-size:14px;letter-spacing:0}
+.progress-track{height:9px;overflow:hidden;background:#D8E9E8;border-radius:12px}
+.progress-bar{height:100%;width:82%;background:linear-gradient(90deg,#1AB79A,#65D6A9);border-radius:12px}
+.score-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}
+.score-stat{border-radius:12px;background:rgba(255,255,255,.76);text-align:center;padding:11px 6px}
+.score-stat span{display:block;font-size:11px;color:#6E819E}.score-stat strong{display:block;font-size:14px;margin-top:4px;color:#0E2B66}
+.profile-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:23px 0 11px;color:#0E2B66;font-weight:900}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.profile-badge{border-radius:15px;background:#F8FAFF;border:1px solid #EDF1F8;text-align:center;padding:14px 8px}
+.profile-badge:nth-child(1){background:#F0FBF8}.profile-badge:nth-child(2){background:#F3F0FF}.profile-badge:nth-child(3){background:#FFF5E9}.profile-badge:nth-child(4){background:#EDF7FF}
+.profile-badge .badge-icon{font-size:26px;display:block;margin-bottom:8px}
+.profile-badge strong{display:block;font-size:12px;color:#0E2B66}
+.profile-badge small{display:block;font-size:10px;color:#6E819E;margin-top:5px;line-height:1.4}
+.history-line{display:flex;gap:12px;align-items:center;padding:13px 0;border-top:1px solid #EDF1F5}
+.history-line .hist-icon{width:37px;height:37px;border-radius:10px;background:#EEF7FA;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.history-line .hist-desc{flex:1;min-width:0}
+.history-line strong{color:#0E2B66;font-size:13px;display:block}
+.history-line small{color:#6E819E;font-size:11px}
+.hist-badge{border-radius:40px;padding:5px 9px;background:#E7F8F2;color:#178E72;font-size:11px;font-weight:800;white-space:nowrap}
+.confirm-dialog{width:min(92vw,390px);max-width:390px;border:none;border-radius:23px;background:white;box-shadow:0 24px 70px rgba(6,36,78,.25);padding:25px;color:#304667}
+.confirm-dialog::backdrop{background:rgba(10,30,60,.55);backdrop-filter:blur(2px)}
+.confirm-dialog h2{margin:0 0 8px;color:#0E2B66;font-size:19px}
+.confirm-dialog p{margin:0 0 20px;font-size:14px;line-height:1.6;color:#6E819E}
+.confirm-dialog .dialog-actions{display:flex;gap:10px}.confirm-dialog .dialog-actions button{flex:1}
+@media(max-width:680px){
+.mobile-tabs{grid-template-columns:repeat(4,1fr)}.mobile-tab{min-width:0}
+.broker-peek{flex-wrap:wrap;padding:16px 14px}.broker-peek .btn{width:100%}
+.profile-panel{padding:17px 15px;border-radius:20px}.profile-header{gap:13px}.profile-photo{width:75px;height:75px}
+.profile-heading h2{font-size:19px}.score-panel{padding:17px}
+.score-main p{font-size:11px;max-width:170px}.score-number{font-size:40px}
+.score-stat{padding:10px 4px}.score-stat strong{font-size:12px}.badge-grid{gap:6px}.profile-badge{padding:12px 3px}.profile-badge strong{font-size:11px}.profile-badge small{font-size:9px}
+.record-actions{margin-top:14px}
+}
