@@ -10,6 +10,7 @@
   <meta name="description" content="집체크 - 입퇴거 주택상태 공동점검 시제품"/>
   <meta name="apple-mobile-web-app-title" content="집체크"/>
   <link rel="apple-touch-icon" href="icons/icon.svg"/>
+  <link rel="stylesheet" href="v2.css"/>
   <link rel="manifest" href="manifest.webmanifest"/>
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
   <title>집체크 ZipCheck | iPhone 시연용 웹앱</title>
@@ -328,14 +329,7 @@
   <div class="shell">
     <header class="site-header">
       <div class="brand">
-        <div class="brand-logo" aria-hidden="true">
-          <svg width="38" height="38" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 30.5L29 13H53" stroke="#0E2B66" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10 31V52H41" stroke="#0E2B66" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M39 32L48 40L58 24" stroke="#F5A24A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M39 52H54" stroke="#23B4B6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="brand-logo" aria-hidden="true"><svg width="44" height="44" viewBox="40 8 188 176" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M59 75L135 25L183 57" stroke="#082749" stroke-width="15" stroke-linecap="square"/><path d="M59 75V163H131" stroke="#082749" stroke-width="16"/><path d="M117 108L151 141L209 74" stroke="#FF973B" stroke-width="15" stroke-linecap="square"/><path d="M145 166H199Q211 166 211 154V110" stroke="#4CB5B9" stroke-width="16" stroke-linecap="square"/></svg></div>
         <div class="brand-copy"><strong>집체크</strong><span>ZIPCHECK</span></div>
       </div>
       <div class="toplinks" id="nav"></div>
@@ -359,6 +353,7 @@
     <button type="button" class="mobile-tab mobile-tab-create" data-page="new" aria-label="새 점검">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>새 점검</span>
     </button>
+  <button type="button" class="mobile-tab" data-page="profile" aria-label="중개사 프로필"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M4 21q0-9 8-9t8 9"/></svg><span>중개사</span></button>
   </nav>
   <div id="toast" class="toast"></div>
 
@@ -404,18 +399,31 @@
     function status(rec){ return rec.brokerChecked && rec.ownerChecked ? '확인 완료' : '검토 중'; }
     function badge(rec){ return `<span class="tag ${status(rec)==='확인 완료'?'':'orange'}">${status(rec)}</span>`; }
     function renderNav(){
-      $('nav').innerHTML = [['home','홈'],['records','점검 목록'],['new','새 점검']]
+      $('nav').innerHTML = [['home','홈'],['records','점검 목록'],['new','새 점검'],['profile','중개사']]
         .map(([p,t])=>`<button type="button" class="navbtn ${page===p?'active':''}" data-page="${p}">${t}</button>`).join('');
       $('roles').innerHTML = `<span class="role-caption">사용자 역할 <small>· 체험 모드</small></span>`+
         ROLES.map(r=>`<button type="button" class="role-btn ${role===r?'active':''}" data-role="${r}" aria-pressed="${role===r}">${r}</button>`).join('');
       const tabs=$('mobile-tabs'); if(tabs){ tabs.querySelectorAll('[data-page]').forEach(el=>{el.classList.toggle('active',el.dataset.page===page);el.setAttribute('aria-current',el.dataset.page===page?'page':'false')}); }
     }
+let pendingDeleteId=null;
+function canDelete(r){return role==='임차인'&&!r.brokerChecked&&!r.ownerChecked}
+function requestDelete(id){
+ const r=records.find(x=>x.id===id);
+ if(!r||!canDelete(r)){toast('검토 전 기록만 임차인이 삭제할 수 있습니다.');return;}
+ pendingDeleteId=id;
+ if(confirm('아직 검토되지 않은 점검 기록을 삭제할까요? 삭제 후 복구할 수 없습니다.')){
+  const prev=records; records=records.filter(x=>x.id!==id);
+  if(!save())records=prev;
+  else{selectedId=null;if(page==='detail')goto('records');else render();toast('점검 기록을 삭제했습니다.')}
+ }
+ pendingDeleteId=null;
+}
     function card(rec){
-      return `<article class="card record-card" data-open="${esc(rec.id)}" role="button" tabindex="0">
+      return `<article class="card record-card"><div class="record-main" data-open="${esc(rec.id)}" role="button" tabindex="0">
         <div class="card-top">${badge(rec)}<span class="date">${esc(rec.date)}</span></div>
         <h3>${esc(rec.name)}</h3>
         <div class="meta">${esc(rec.type)} 점검 · 공간 ${rec.rooms.length}곳</div>
-        <div class="card-bottom">점검 기록 확인 →</div>
+        </div><div class="record-actions"><span class="card-bottom">점검 기록 확인 →</span>${canDelete(rec)?`<button type="button" class="delete-record" data-delete="${esc(rec.id)}">삭제</button>`:""}</div>
       </article>`;
     }
     function renderHome(){
@@ -482,7 +490,7 @@
     function renderRecords(){
       return `<div class="page-head"><span class="eyebrow">Inspection Records</span><h1>점검 목록</h1><p>등록된 기록을 선택하면 공간별 상태와 참여자의 확인 여부를 볼 수 있습니다.</p></div>
       ${records.length ? `<div class="cards">${records.map(card).join('')}</div>` : '<div class="empty"><strong>등록된 기록이 없습니다.</strong>새 점검을 등록해 보세요.</div>'}
-      <div class="actions"><button class="btn ghost" id="export">기록 JSON 내보내기</button><button class="btn ghost" id="reset">샘플 데이터로 초기화</button></div>`;
+      <div class="broker-peek"><span class="peek-graphic">👤</span><div class="peek-copy"><strong>담당 공인중개사</strong><p>협의 평판과 활동 이력을 확인해 보세요.</p></div><button type="button" class="btn secondary" data-page="profile">프로필 보기 →</button></div><div class="actions"><button class="btn ghost" id="export">기록 JSON 내보내기</button></div>`;
     }
     function roomEditor(room){
       const r = esc(room);
@@ -508,6 +516,18 @@
         <div class="form-actions"><button type="button" class="btn secondary" data-page="home">취소</button><button type="submit" class="btn primary">점검 기록 저장 →</button></div>
       </form>`;
     }
+function renderProfile(){
+return `<div class="profile-page"><div class="page-head"><span class="eyebrow">BROKER PROFILE</span><h1>공인중개사 프로필</h1><p>입·퇴거 협의를 지원하는 담당자 정보</p></div>
+<section class="profile-panel"><div class="profile-header"><div class="profile-photo"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#E5F2FA"/><path d="M11 100Q15 70 36 68L50 83L64 68Q85 72 89 100" fill="#244A83"/><path d="M38 63H62V78L50 90L38 78Z" fill="#E9B38B"/><path d="M42 78L50 90L58 78L67 100H33Z" fill="white"/><ellipse cx="50" cy="45" rx="23" ry="29" fill="#F3C49D"/><path d="M27 42Q24 17 47 17Q67 11 73 29L76 44L66 38Q55 24 37 35L28 48Z" fill="#253554"/><circle cx="42" cy="48" r="2" fill="#28364D"/><circle cx="58" cy="48" r="2" fill="#28364D"/><path d="M44 60Q50 64 56 60" stroke="#A9675F" stroke-width="2" fill="none"/></svg></div><div class="profile-heading"><h2>김지훈 중개사</h2><p>행복부동산 · 공인중개사 프로필</p><div class="profile-tags"><span class="profile-tag">✓ 시연용 프로필</span><span class="profile-tag violet">✦ 협의 지원</span></div></div></div>
+<div class="profile-disclaimer">※ 이름, 82점, 활동 배지, 활동 이력은 모두 가상 시연 데이터이며 실제 중개사 자격이나 실적을 인증하지 않습니다.</div>
+<div class="score-panel" style="margin-top:16px"><div class="score-title">☀️ 협의 맑음도 <small>· 예시 지표</small></div><div class="score-main"><p>응답 속도, 증빙 충실도, 일정 준수를 한눈에 확인하는 예시 지표예요.</p><div class="score-number">82<small>점</small></div></div><div class="progress-track"><div class="progress-bar"></div></div><div class="score-stats"><div class="score-stat"><span>⚡ 응답 속도</span><strong>빠름</strong></div><div class="score-stat"><span>▣ 증빙 충실도</span><strong>높음</strong></div><div class="score-stat"><span>▢ 일정 준수</span><strong>우수</strong></div></div></div>
+<div class="profile-section-head">활동 배지 4개 <small>예시</small></div><div class="badge-grid"><div class="profile-badge"><span class="badge-icon">💬</span><strong>빠른 응답</strong><small>빠른 소통</small></div><div class="profile-badge"><span class="badge-icon">📑</span><strong>증빙 꼼꼼</strong><small>서류 확인</small></div><div class="profile-badge"><span class="badge-icon">🗓️</span><strong>약속 준수</strong><small>일정 관리</small></div><div class="profile-badge"><span class="badge-icon">🤝</span><strong>협의 경험</strong><small>분쟁 조율</small></div></div>
+<div class="profile-section-head">최근 협의 내역 <small>가상 기록</small></div>
+<div class="history-line"><span class="hist-icon">🛠️</span><div class="hist-desc"><strong>벽지 보수 범위 협의 완료</strong><small>7월 16일 · 견적 공동 확인</small></div><span class="hist-badge">완료</span></div>
+<div class="history-line"><span class="hist-icon">🧽</span><div class="hist-desc"><strong>에어컨 청소 여부 확인</strong><small>7월 12일 · 사진 확인</small></div><span class="hist-badge">완료</span></div>
+<div class="history-line"><span class="hist-icon">🧹</span><div class="hist-desc"><strong>퇴거 청소 일정 조율</strong><small>7월 8일 · 일정 협의</small></div><span class="hist-badge">조율</span></div>
+</section></div>`;
+}
     function renderDetail(){
       const r = records.find(x=>x.id===selectedId);
       if(!r) return '<div class="empty">기록을 찾을 수 없습니다.</div>';
@@ -515,7 +535,7 @@
       const checkAction = ((role==='공인중개사'&&!r.brokerChecked)||(role==='임대인'&&!r.ownerChecked))
         ? `<div class="confirm-panel"><strong>${role==='공인중개사'?'중개사 검토 의견':'임대인 확인 의견'}</strong><p class="meta">확인 전 사진과 메모를 검토해 주세요.</p><form id="review-form"><textarea class="comment" name="comment" maxlength="500" placeholder="의견을 작성해 주세요. (선택)"></textarea><button type="submit" class="btn primary" style="width:100%">${role==='공인중개사'?'검토 완료 처리':'확인 완료 처리'}</button></form></div>`
         : `<div class="note">${role==='임차인'?'중개사와 임대인으로 역할을 바꿔 공동 확인 과정을 체험해 보세요.':role==='공인중개사'?'이 점검 기록에 대한 중개사 검토를 마쳤습니다.':'이 점검 기록에 대한 임대인 확인을 마쳤습니다.'}</div>`;
-      return `<div class="page-head"><button class="text-btn" data-page="records">← 점검 목록</button><div style="margin-top:16px">${badge(r)}</div><h1>${esc(r.name)}</h1><p>${esc(r.type)} 점검 · 점검일 ${esc(r.date)} · 임차인이 등록</p></div>
+      return `<div class="page-head"><button class="text-btn" data-page="records">← 점검 목록</button><div style="margin-top:16px">${badge(r)}</div><h1>${esc(r.name)}</h1><p>${esc(r.type)} 점검 · 점검일 ${esc(r.date)} · 임차인이 등록</p><div class="detail-utility"><button type="button" class="btn secondary" data-page="profile">👤 공인중개사 프로필</button>${canDelete(r)?`<button type="button" class="delete-record" data-delete="${esc(r.id)}">점검 삭제</button>`:""}</div></div>
       <div class="detail-grid">
         <section>
           <div class="panel"><h2>공간별 점검 결과</h2><div class="detail-list">${r.rooms.map(x=>`<div class="detail-room"><strong>${esc(x.name)}</strong><div class="state-label">${esc(x.state)}</div><p>${esc(x.memo||'작성된 메모가 없습니다.')}</p>${x.photos?.length?`<div class="photos">${x.photos.map(src=>`<a href="${src}" target="_blank" rel="noopener noreferrer"><img src="${src}" alt="${esc(x.name)} 점검 사진"></a>`).join('')}</div>`:'<p class="hint">등록된 사진 없음</p>'}</div>`).join('')}</div></div>
@@ -526,7 +546,7 @@
     }
     function render(){
       renderNav();
-      $('app').innerHTML = page==='home' ? renderHome() : page==='records' ? renderRecords() : page==='new' ? renderNew() : renderDetail();
+      $('app').innerHTML = page==='home' ? renderHome() : page==='records' ? renderRecords() : page==='new' ? renderNew() : page==='profile' ? renderProfile() : renderDetail();
       window.scrollTo({top:0, behavior:'auto'});
     }
     function goto(p, fromHistory=false){
@@ -569,6 +589,7 @@
       target.innerHTML=(photosDraft[room]||[]).map((src,i)=>`<span class="photo-item"><img class="photo-mini" src="${src}" alt="${esc(room)} 사진 ${i+1}"><button type="button" class="photo-remove" data-remove-photo="${esc(room)}" data-photo-index="${i}" aria-label="사진 ${i+1} 제거">×</button></span>`).join('') + `<span class="upload-count">${(photosDraft[room]||[]).length} / 4장</span>`;
     }
     $('app').addEventListener('click',e=>{
+      const del=e.target.closest('[data-delete]');if(del){e.preventDefault();e.stopPropagation();requestDelete(del.dataset.delete);return;}
       const rem=e.target.closest('[data-remove-photo]');
       if(rem){const room=rem.dataset.removePhoto;const i=Number(rem.dataset.photoIndex);if(photosDraft[room] && Number.isInteger(i)){photosDraft[room].splice(i,1);paintPhotoPreview(room)}return;}
       const nav = e.target.closest('[data-page]');
