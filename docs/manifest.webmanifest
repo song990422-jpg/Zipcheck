@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "집체크 ZipCheck - 안심 이사",
+  "short_name": "집체크",
+  "description": "입퇴거 주택 상태 공동점검 시연용 앱",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F7FAFD",
+  "theme_color": "#0E2B66",
+  "icons": [{ "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
